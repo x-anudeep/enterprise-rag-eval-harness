@@ -1,0 +1,9 @@
+The HIPAA Security Rule requires administrative, physical, and technical safeguards for
+electronic protected health information. Administrative safeguards include risk analysis,
+risk management, workforce security, information access management, contingency planning,
+and periodic security evaluation.
+
+Technical safeguards include unique user identification, emergency access procedures,
+automatic logoff, encryption where reasonable and appropriate, audit controls, integrity
+controls, and transmission security. Physical safeguards protect facilities, workstations,
+and devices from unauthorized physical access.

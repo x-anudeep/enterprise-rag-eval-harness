@@ -1,0 +1,8 @@
+FDA expectations for electronic records include secure user access, audit trails, record
+retention, system validation, and controls that preserve data integrity. Electronic signatures
+should be unique to one individual and linked to records so they cannot be excised, copied,
+or transferred to falsify another record.
+
+Validated systems should maintain accurate and complete copies of records for inspection.
+Organizations should periodically review audit trails and investigate unexplained changes
+to regulated data.

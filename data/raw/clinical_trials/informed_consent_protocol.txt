@@ -1,0 +1,8 @@
+Clinical trial protocols must describe informed consent procedures before any study-specific
+intervention begins. Investigators should explain foreseeable risks, expected benefits,
+alternative procedures, confidentiality protections, compensation for injury, and the
+participant's right to withdraw without penalty.
+
+Consent documentation must be retained according to regulatory and sponsor requirements.
+Protocol deviations affecting participant safety, rights, or data integrity should be
+reported promptly to the sponsor and institutional review board.

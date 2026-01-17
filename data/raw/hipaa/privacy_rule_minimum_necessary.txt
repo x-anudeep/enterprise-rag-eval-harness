@@ -1,0 +1,10 @@
+Covered entities must make reasonable efforts to use, disclose, and request only the
+minimum necessary protected health information needed to accomplish the intended purpose.
+Role-based access controls should limit workforce access to records based on job function.
+Organizations must document policies for routine disclosures and review non-routine requests
+individually before releasing protected health information.
+
+The minimum necessary standard does not apply to disclosures for treatment, disclosures made
+to the individual, uses or disclosures made pursuant to a valid authorization, or disclosures
+required by law. Privacy officers should train workforce members on these exceptions and keep
+training records available for audit.

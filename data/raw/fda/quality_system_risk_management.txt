@@ -1,0 +1,8 @@
+FDA quality system guidance emphasizes risk-based decision making throughout product design,
+manufacturing, corrective action, and supplier management. Manufacturers should identify
+hazards, estimate and evaluate associated risks, implement controls, and monitor whether
+controls remain effective after process changes.
+
+Corrective and preventive action records should include investigation results, root cause
+analysis, actions taken, verification of effectiveness, and management review when trends
+indicate systemic quality problems.

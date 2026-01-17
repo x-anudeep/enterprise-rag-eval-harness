@@ -1,0 +1,8 @@
+Clinical trial teams must collect, assess, and report adverse events according to the protocol,
+investigator brochure, and applicable regulations. Serious adverse events require expedited
+review when they result in death, are life-threatening, require hospitalization, cause
+persistent disability, or represent an important medical event.
+
+Investigators should evaluate severity, causality, expectedness, and outcome for each event.
+Sponsors must maintain safety oversight, reconcile safety data, and notify regulators and
+ethics committees when reporting criteria are met.
