@@ -1,35 +1,49 @@
 from __future__ import annotations
 
-import hashlib
 import math
 from collections import Counter
 
 from enterprise_rag_eval.config import RetrievalConfig
 from enterprise_rag_eval.models import Chunk, RetrievalResult
+from enterprise_rag_eval.retrieval.embeddings import HashEmbeddingModel
+from enterprise_rag_eval.retrieval.reranker import CrossEncoderReranker
+from enterprise_rag_eval.retrieval.stores import InMemoryVectorStore, build_vector_records
 from enterprise_rag_eval.text import tokenize
 
 
 class HybridRetriever:
     """Deterministic BM25 plus hash-vector semantic retriever for local CI."""
 
-    def __init__(self, chunks: list[Chunk], config: RetrievalConfig | None = None) -> None:
+    def __init__(
+        self,
+        chunks: list[Chunk],
+        config: RetrievalConfig | None = None,
+        embedding_model: HashEmbeddingModel | None = None,
+        reranker: CrossEncoderReranker | None = None,
+    ) -> None:
         self.chunks = chunks
         self.config = config or RetrievalConfig()
+        self.embedding_model = embedding_model or HashEmbeddingModel()
+        self.reranker = reranker
         self.term_frequencies = [Counter(tokenize(chunk.text)) for chunk in chunks]
         self.document_frequency = self._document_frequency()
         self.avg_doc_len = self._average_length()
-        self.vectors = [self._embed(chunk.text) for chunk in chunks]
+        self.vectors = [self.embedding_model.embed(chunk.text) for chunk in chunks]
+        self.vector_store = InMemoryVectorStore()
+        self.vector_store.upsert(build_vector_records(chunks, self.vectors))
 
     def search(self, query: str, top_k: int | None = None) -> list[RetrievalResult]:
-        query_vector = self._embed(query)
+        query_vector = self.embedding_model.embed(query)
         scored: list[RetrievalResult] = []
         bm25_scores = [self._bm25(query, index) for index in range(len(self.chunks))]
-        semantic_scores = [self._cosine(query_vector, vector) for vector in self.vectors]
+        semantic_by_id = {
+            result.record.id: result.score
+            for result in self.vector_store.search(query_vector, top_k=len(self.chunks))
+        }
         normalized_bm25 = self._normalize(bm25_scores)
 
-        for chunk, bm25_score, semantic_score in zip(
-            self.chunks, normalized_bm25, semantic_scores, strict=True
-        ):
+        for chunk, bm25_score in zip(self.chunks, normalized_bm25, strict=True):
+            semantic_score = semantic_by_id.get(chunk.id, 0.0)
             score = (
                 self.config.bm25_weight * bm25_score
                 + self.config.semantic_weight * semantic_score
@@ -43,9 +57,10 @@ class HybridRetriever:
                 )
             )
 
-        return sorted(scored, key=lambda result: result.score, reverse=True)[
-            : top_k or self.config.top_k
-        ]
+        ranked = sorted(scored, key=lambda result: result.score, reverse=True)
+        if self.reranker:
+            return self.reranker.rerank(query, ranked[: max(top_k or self.config.top_k, 10)])
+        return ranked[: top_k or self.config.top_k]
 
     def _document_frequency(self) -> Counter[str]:
         frequency: Counter[str] = Counter()
@@ -80,23 +95,6 @@ class HybridRetriever:
             denominator = tf + k1 * (1 - b + b * doc_len / self.avg_doc_len)
             score += idf * numerator / denominator
         return score
-
-    @staticmethod
-    def _embed(text: str, dimensions: int = 96) -> list[float]:
-        vector = [0.0] * dimensions
-        for token in tokenize(text):
-            digest = hashlib.sha256(token.encode("utf-8")).digest()
-            index = int.from_bytes(digest[:2], "big") % dimensions
-            sign = 1 if digest[2] % 2 == 0 else -1
-            vector[index] += sign
-        norm = math.sqrt(sum(value * value for value in vector))
-        if norm == 0:
-            return vector
-        return [value / norm for value in vector]
-
-    @staticmethod
-    def _cosine(left: list[float], right: list[float]) -> float:
-        return max(0.0, sum(a * b for a, b in zip(left, right, strict=True)))
 
     @staticmethod
     def _normalize(scores: list[float]) -> list[float]:

@@ -19,6 +19,12 @@ dev = [
     "pytest>=8.2,<9",
     "ruff>=0.5,<1",
 ]
+pinecone = [
+    "pinecone>=5,<6",
+]
+postgres = [
+    "psycopg[binary]>=3.2,<4",
+]
 
 [project.scripts]
 rag-harness = "enterprise_rag_eval.cli:app"

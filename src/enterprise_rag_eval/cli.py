@@ -30,8 +30,10 @@ def run_eval(
         typer.Option(help="JSON report path."),
     ] = Path("reports/phase1_eval.json"),
     qa_limit: Annotated[int, typer.Option(help="Maximum synthetic QA cases.")] = 20,
+    rerank: Annotated[bool, typer.Option(help="Enable cross-encoder reranking stage.")] = True,
 ) -> None:
     config = HarnessConfig(docs_path=docs)
+    config.reranker.enabled = rerank
     documents, chunks, questions, report = run_local_evaluation(config, qa_limit=qa_limit)
     report.write_json(output)
 
