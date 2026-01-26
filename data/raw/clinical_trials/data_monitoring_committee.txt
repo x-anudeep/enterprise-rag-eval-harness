@@ -1,0 +1,7 @@
+Clinical trial protocols may establish an independent data monitoring committee for studies with
+significant safety risk, vulnerable populations, or interim efficacy analyses. The committee should
+review accumulating safety and effectiveness data according to a written charter.
+
+The charter should describe meeting frequency, voting procedures, confidentiality expectations,
+stopping guidelines, and how recommendations are communicated to the sponsor. Committee members
+should be independent from trial conduct and free from conflicts that could bias safety oversight.

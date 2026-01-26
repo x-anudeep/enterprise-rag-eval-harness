@@ -1,0 +1,8 @@
+HIPAA breach notification procedures require covered entities to assess impermissible uses or
+disclosures of protected health information. The assessment should consider the nature of the
+information, the unauthorized person who used or received it, whether the information was actually
+acquired or viewed, and the extent to which risk was mitigated.
+
+When a breach is confirmed, affected individuals must be notified without unreasonable delay and
+no later than sixty calendar days after discovery. Business associates must notify the covered
+entity so the covered entity can meet individual, media, and regulator notification obligations.

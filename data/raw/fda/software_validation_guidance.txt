@@ -1,0 +1,8 @@
+FDA software validation guidance expects regulated organizations to validate software used in
+production, quality systems, clinical investigations, or electronic records. Validation evidence
+should show that software requirements are complete, testable, risk based, and traceable to
+verification activities.
+
+Change control should evaluate whether software updates affect validated functions, data integrity,
+security, or reporting. Regression testing should be proportionate to risk and documented before
+the updated system is released for regulated use.
