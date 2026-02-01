@@ -10,3 +10,4 @@ build/
 .env
 reports/*.json
 reports/*.md
+reports/*.jsonl

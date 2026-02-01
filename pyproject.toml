@@ -25,6 +25,13 @@ pinecone = [
 postgres = [
     "psycopg[binary]>=3.2,<4",
 ]
+ragas = [
+    "ragas>=0.2,<1",
+    "datasets>=2.20,<4",
+]
+guardrails = [
+    "guardrails-ai>=0.5,<1",
+]
 
 [project.scripts]
 rag-harness = "enterprise_rag_eval.cli:app"

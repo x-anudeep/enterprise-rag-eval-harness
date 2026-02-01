@@ -31,9 +31,16 @@ def run_eval(
     ] = Path("reports/phase1_eval.json"),
     qa_limit: Annotated[int, typer.Option(help="Maximum synthetic QA cases.")] = 20,
     rerank: Annotated[bool, typer.Option(help="Enable cross-encoder reranking stage.")] = True,
+    ragas_export: Annotated[
+        Path,
+        typer.Option(help="RAGAS-compatible JSONL export path."),
+    ] = Path("reports/ragas_dataset.jsonl"),
+    guardrails: Annotated[bool, typer.Option(help="Enable healthcare guardrail checks.")] = True,
 ) -> None:
     config = HarnessConfig(docs_path=docs)
     config.reranker.enabled = rerank
+    config.ragas.export_path = ragas_export
+    config.guardrails.enabled = guardrails
     documents, chunks, questions, report = run_local_evaluation(config, qa_limit=qa_limit)
     report.write_json(output)
 

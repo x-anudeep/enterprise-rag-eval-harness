@@ -47,6 +47,22 @@ class EvalThresholds(BaseModel):
     answer_relevancy: float = 0.45
     context_precision: float = 0.30
     recall_at_3: float = 0.55
+    safety_pass_rate: float = 1.0
+
+
+class GuardrailsConfig(BaseModel):
+    """Runtime policy checks for generated answers."""
+
+    enabled: bool = True
+    block_direct_identifiers: bool = True
+    require_citation_context: bool = True
+
+
+class RagasConfig(BaseModel):
+    """RAGAS-compatible export settings."""
+
+    enabled: bool = True
+    export_path: Path = Path("reports/ragas_dataset.jsonl")
 
 
 class HarnessConfig(BaseModel):
@@ -55,4 +71,6 @@ class HarnessConfig(BaseModel):
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     vector_store: VectorStoreConfig = Field(default_factory=VectorStoreConfig)
     reranker: RerankerConfig = Field(default_factory=RerankerConfig)
+    guardrails: GuardrailsConfig = Field(default_factory=GuardrailsConfig)
+    ragas: RagasConfig = Field(default_factory=RagasConfig)
     thresholds: EvalThresholds = Field(default_factory=EvalThresholds)

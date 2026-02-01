@@ -8,6 +8,7 @@ from pathlib import Path
 
 from enterprise_rag_eval.config import EvalThresholds
 from enterprise_rag_eval.generation import ExtractiveAnswerGenerator
+from enterprise_rag_eval.guardrails import GuardrailResult, HealthcareGuardrails
 from enterprise_rag_eval.models import RetrievalResult, SyntheticQuestion
 from enterprise_rag_eval.retrieval import HybridRetriever
 from enterprise_rag_eval.text import jaccard, tokenize
@@ -19,11 +20,13 @@ class EvaluationCaseResult:
     question: str
     answer: str
     expected_answer: str
+    contexts: list[str]
     retrieved_chunk_ids: list[str]
     faithfulness: float
     answer_relevancy: float
     context_precision: float
     recall_at_3: float
+    guardrail: GuardrailResult
     latency_ms: float
 
 
@@ -48,10 +51,12 @@ class RagEvaluator:
         self,
         retriever: HybridRetriever,
         generator: ExtractiveAnswerGenerator | None = None,
+        guardrails: HealthcareGuardrails | None = None,
         thresholds: EvalThresholds | None = None,
     ) -> None:
         self.retriever = retriever
         self.generator = generator or ExtractiveAnswerGenerator()
+        self.guardrails = guardrails or HealthcareGuardrails()
         self.thresholds = thresholds or EvalThresholds()
 
     def evaluate(self, questions: list[SyntheticQuestion]) -> EvaluationReport:
@@ -64,6 +69,7 @@ class RagEvaluator:
         started = time.perf_counter()
         contexts = self.retriever.search(question.question, top_k=3)
         answer = self.generator.answer(question.question, contexts)
+        guardrail = self.guardrails.validate(answer, contexts)
         latency_ms = (time.perf_counter() - started) * 1000
 
         context_text = " ".join(result.chunk.text for result in contexts)
@@ -73,11 +79,13 @@ class RagEvaluator:
             question=question.question,
             answer=answer,
             expected_answer=question.expected_answer,
+            contexts=[result.chunk.text for result in contexts],
             retrieved_chunk_ids=retrieved_ids,
             faithfulness=self._faithfulness(answer, context_text),
             answer_relevancy=jaccard(tokenize(answer), tokenize(question.expected_answer)),
             context_precision=self._context_precision(contexts, question.expected_answer),
             recall_at_3=1.0 if question.source_chunk_id in retrieved_ids else 0.0,
+            guardrail=guardrail,
             latency_ms=latency_ms,
         )
 
@@ -107,15 +115,19 @@ class RagEvaluator:
                 "faithfulness": 0.0,
                 "answer_relevancy": 0.0,
                 "context_precision": 0.0,
-                "recall_at_3": 0.0,
-                "latency_ms_p50": 0.0,
-                "estimated_cost_usd": 0.0,
-            }
+            "recall_at_3": 0.0,
+            "safety_pass_rate": 0.0,
+            "latency_ms_p50": 0.0,
+            "estimated_cost_usd": 0.0,
+        }
         return {
             "faithfulness": statistics.fmean(result.faithfulness for result in results),
             "answer_relevancy": statistics.fmean(result.answer_relevancy for result in results),
             "context_precision": statistics.fmean(result.context_precision for result in results),
             "recall_at_3": statistics.fmean(result.recall_at_3 for result in results),
+            "safety_pass_rate": statistics.fmean(
+                1.0 if result.guardrail.passed else 0.0 for result in results
+            ),
             "latency_ms_p50": statistics.median(result.latency_ms for result in results),
             "estimated_cost_usd": 0.0,
         }
@@ -126,4 +138,5 @@ class RagEvaluator:
             and metrics["answer_relevancy"] >= self.thresholds.answer_relevancy
             and metrics["context_precision"] >= self.thresholds.context_precision
             and metrics["recall_at_3"] >= self.thresholds.recall_at_3
+            and metrics["safety_pass_rate"] >= self.thresholds.safety_pass_rate
         )
