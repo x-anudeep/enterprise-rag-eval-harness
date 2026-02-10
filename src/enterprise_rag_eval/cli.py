@@ -35,11 +35,16 @@ def run_eval(
         Path,
         typer.Option(help="RAGAS-compatible JSONL export path."),
     ] = Path("reports/ragas_dataset.jsonl"),
+    summary: Annotated[
+        Path,
+        typer.Option(help="Markdown summary report path."),
+    ] = Path("reports/eval_summary.md"),
     guardrails: Annotated[bool, typer.Option(help="Enable healthcare guardrail checks.")] = True,
 ) -> None:
     config = HarnessConfig(docs_path=docs)
     config.reranker.enabled = rerank
     config.ragas.export_path = ragas_export
+    config.reporting.markdown_path = summary
     config.guardrails.enabled = guardrails
     documents, chunks, questions, report = run_local_evaluation(config, qa_limit=qa_limit)
     report.write_json(output)

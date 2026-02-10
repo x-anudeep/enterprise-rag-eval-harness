@@ -65,6 +65,20 @@ class RagasConfig(BaseModel):
     export_path: Path = Path("reports/ragas_dataset.jsonl")
 
 
+class CostConfig(BaseModel):
+    """Simple token-based cost model for CI and regression tracking."""
+
+    input_cost_per_1k_tokens: float = Field(default=0.0001, ge=0)
+    output_cost_per_1k_tokens: float = Field(default=0.0003, ge=0)
+    fixed_eval_overhead_usd: float = Field(default=0.0, ge=0)
+
+
+class ReportingConfig(BaseModel):
+    """Report artifact destinations."""
+
+    markdown_path: Path = Path("reports/eval_summary.md")
+
+
 class HarnessConfig(BaseModel):
     docs_path: Path = Path("data/raw")
     chunking: ChunkingConfig = Field(default_factory=ChunkingConfig)
@@ -73,4 +87,6 @@ class HarnessConfig(BaseModel):
     reranker: RerankerConfig = Field(default_factory=RerankerConfig)
     guardrails: GuardrailsConfig = Field(default_factory=GuardrailsConfig)
     ragas: RagasConfig = Field(default_factory=RagasConfig)
+    cost: CostConfig = Field(default_factory=CostConfig)
+    reporting: ReportingConfig = Field(default_factory=ReportingConfig)
     thresholds: EvalThresholds = Field(default_factory=EvalThresholds)
