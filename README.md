@@ -48,6 +48,8 @@ The Phase 1 evaluator reports:
 - `safety_pass_rate`
 - `latency_ms_p50`
 - `estimated_cost_usd`
+- `input_tokens`
+- `output_tokens`
 
 These local metrics are intentionally deterministic so CI can block regressions before adding
 external model providers.
@@ -78,3 +80,11 @@ Optional extras are available when connecting the local deterministic harness to
 ```bash
 pip install -e ".[ragas,guardrails]"
 ```
+
+## Operational Reports
+
+Every eval run writes:
+
+- JSON metrics and per-case results via `--output`
+- RAGAS-compatible JSONL via `--ragas-export`
+- Markdown summary with cost, latency, and slowest cases via `--summary`

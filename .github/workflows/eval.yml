@@ -22,4 +22,14 @@ jobs:
       - name: Test
         run: pytest
       - name: Evaluation gate
-        run: rag-harness run-eval --docs data/raw --output reports/phase3_eval.json
+        run: |
+          rag-harness run-eval \
+            --docs data/raw \
+            --output reports/phase4_eval.json \
+            --ragas-export reports/ragas_dataset.jsonl \
+            --summary reports/eval_summary.md
+      - name: Upload evaluation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rag-eval-reports
+          path: reports/
