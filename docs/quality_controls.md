@@ -1,8 +1,8 @@
-# Phase 3 Quality Layer
+# Quality Controls
 
-Phase 3 adds evaluation and safety controls around the retrieval pipeline.
+The quality layer adds evaluation and safety controls around the retrieval pipeline.
 
-## Delivered
+## Capabilities
 
 - RAGAS-compatible JSONL export with questions, answers, contexts, ground truth, local metrics,
   and guardrail metadata.

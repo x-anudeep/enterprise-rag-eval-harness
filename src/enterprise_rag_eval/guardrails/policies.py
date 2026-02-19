@@ -17,7 +17,7 @@ class HealthcareGuardrails:
     """Deterministic healthcare compliance guardrails for local CI.
 
     These checks mirror the policy surface that Guardrails AI would enforce in production while
-    keeping Phase 3 free of external model calls.
+    keeping local validation free of external model calls.
     """
 
     DIRECT_IDENTIFIER_PATTERNS = {

@@ -50,7 +50,7 @@ class InMemoryVectorStore:
 class PgVectorStore:
     """pgvector adapter boundary.
 
-    Phase 2 keeps this dependency-optional: callers can inspect SQL and batches locally, while
+    This adapter keeps the dependency optional: callers can inspect SQL and batches locally, while
     production code can pass an open psycopg connection and execute the same statements.
     """
 

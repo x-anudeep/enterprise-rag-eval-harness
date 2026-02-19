@@ -1,8 +1,9 @@
-# Phase 1 Scope
+# Local RAG Baseline
 
-Phase 1 establishes a local RAG baseline that can run in CI without cloud credentials.
+The local baseline establishes a reproducible RAG workflow that can run in CI without cloud
+credentials.
 
-## Delivered
+## Capabilities
 
 - Domain-organized ingestion for healthcare compliance text files.
 - Sentence-aware semantic chunking with configurable overlap.
@@ -12,10 +13,10 @@ Phase 1 establishes a local RAG baseline that can run in CI without cloud creden
 - Lightweight evaluation metrics aligned to RAGAS concepts.
 - GitHub Actions workflow that runs linting, tests, and the eval gate.
 
-## Deferred
+## Extension Points
 
 - Pinecone and pgvector persistence.
-- Cross-encoder re-ranking.
+- Cross-encoder reranking.
 - External LLM answer generation.
 - Full RAGAS metric execution.
 - Guardrails AI runtime policies.

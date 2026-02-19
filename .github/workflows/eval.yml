@@ -25,7 +25,7 @@ jobs:
         run: |
           rag-harness run-eval \
             --docs data/raw \
-            --output reports/phase4_eval.json \
+            --output reports/eval.json \
             --ragas-export reports/ragas_dataset.jsonl \
             --summary reports/eval_summary.md
       - name: Upload evaluation artifacts

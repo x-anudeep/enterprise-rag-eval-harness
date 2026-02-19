@@ -1,9 +1,9 @@
-# Phase 2 Retrieval Layer
+# Retrieval Architecture
 
-Phase 2 turns the local baseline into a production-shaped retrieval system while keeping CI fully
+The retrieval layer gives the local harness a production-shaped search path while keeping CI fully
 offline.
 
-## Delivered
+## Capabilities
 
 - Shared embedding model interface using deterministic hash vectors for local runs.
 - In-memory vector store with the same upsert/search shape as production stores.

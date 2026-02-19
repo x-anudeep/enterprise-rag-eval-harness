@@ -6,7 +6,7 @@ from enterprise_rag_eval.text import split_sentences, tokenize
 
 
 class CrossEncoderReranker:
-    """Deterministic cross-encoder stand-in for Phase 2 ranking tests.
+    """Deterministic cross-encoder stand-in for ranking tests.
 
     A real cross-encoder can replace this class by preserving the same ``rerank`` method.
     """

@@ -1,8 +1,8 @@
-# Phase 4 Operations
+# Operations Runbook
 
-Phase 4 turns the harness into an operational evaluation workflow.
+The operational workflow turns the harness into a repeatable release check for RAG changes.
 
-## Delivered
+## Capabilities
 
 - Token-based cost estimation for every evaluation run.
 - Markdown evaluation summary with pass/fail status, metrics, cost, latency, and slowest cases.
