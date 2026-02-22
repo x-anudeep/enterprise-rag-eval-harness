@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Enterprise RAG Evaluation Harness</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">R</div>
+          <div>
+            <h1>RAG Eval Harness</h1>
+            <p>Healthcare compliance QA</p>
+          </div>
+        </div>
+        <nav class="nav">
+          <a href="#overview">Overview</a>
+          <a href="#query">Query</a>
+          <a href="#cases">Evaluation</a>
+          <a href="#corpus">Corpus</a>
+        </nav>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Enterprise RAG</p>
+            <h2>Accuracy, safety, latency, and cost in one loop</h2>
+          </div>
+          <div id="statusBadge" class="status-badge">Loading</div>
+        </header>
+
+        <section id="overview" class="metric-grid"></section>
+
+        <section id="query" class="panel query-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Live Retrieval</p>
+              <h3>Ask the compliance corpus</h3>
+            </div>
+            <button id="runSearch" type="button">Run Query</button>
+          </div>
+          <div class="search-row">
+            <input
+              id="queryInput"
+              type="search"
+              value="What safeguards protect electronic health information?"
+              aria-label="Search question"
+            />
+          </div>
+          <div id="answerBox" class="answer-box"></div>
+          <div id="contextList" class="context-list"></div>
+        </section>
+
+        <section id="cases" class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Evaluation Cases</p>
+              <h3>Generated questions and graded answers</h3>
+            </div>
+          </div>
+          <div id="caseList" class="case-list"></div>
+        </section>
+
+        <section id="corpus" class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Indexed Corpus</p>
+              <h3>Source documents</h3>
+            </div>
+          </div>
+          <div id="documentTable" class="document-table"></div>
+        </section>
+      </section>
+    </main>
+    <script src="/assets/app.js" type="module"></script>
+  </body>
+</html>

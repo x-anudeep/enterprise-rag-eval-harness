@@ -9,6 +9,7 @@ from rich.table import Table
 
 from enterprise_rag_eval.config import HarnessConfig
 from enterprise_rag_eval.pipeline import run_local_evaluation
+from enterprise_rag_eval.server import create_app
 
 app = typer.Typer(help="Enterprise RAG evaluation harness.")
 console = Console()
@@ -28,7 +29,7 @@ def run_eval(
     output: Annotated[
         Path,
         typer.Option(help="JSON report path."),
-    ] = Path("reports/phase1_eval.json"),
+    ] = Path("reports/eval.json"),
     qa_limit: Annotated[int, typer.Option(help="Maximum synthetic QA cases.")] = 20,
     rerank: Annotated[bool, typer.Option(help="Enable cross-encoder reranking stage.")] = True,
     ragas_export: Annotated[
@@ -61,3 +62,14 @@ def run_eval(
     )
     if not report.passed:
         raise typer.Exit(code=1)
+
+
+@app.command("serve")
+def serve(
+    host: Annotated[str, typer.Option(help="Dashboard host.")] = "127.0.0.1",
+    port: Annotated[int, typer.Option(help="Dashboard port.")] = 8000,
+    reload: Annotated[bool, typer.Option(help="Reload server on code changes.")] = False,
+) -> None:
+    import uvicorn
+
+    uvicorn.run(create_app(), host=host, port=port, reload=reload)

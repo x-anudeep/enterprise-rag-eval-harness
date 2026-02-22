@@ -14,20 +14,18 @@ RAGAS-compatible exports, lightweight quality metrics, and a CI gate.
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
-rag-harness run-eval --docs data/raw --output reports/phase1_eval.json
+rag-harness run-eval --docs data/raw --output reports/eval.json
 pytest
 ```
 
-## Phase Plan
+## Web Dashboard
 
-1. **Phase 1 - Local baseline:** ingestion, chunking, local hybrid retriever, synthetic QA, metrics,
-   tests, and CI quality gate.
-2. **Phase 2 - Production retrieval:** Pinecone and pgvector adapter boundaries, cross-encoder
-   reranking interface, and a larger benchmark corpus.
-3. **Phase 3 - RAGAS + guardrails:** RAGAS-compatible dataset export, Guardrails AI policy
-   boundaries, and safety metric calibration.
-4. **Phase 4 - Ops hardening:** latency and cost telemetry, dashboards, regression reports, and
-   deployment documentation.
+```bash
+rag-harness serve --host 127.0.0.1 --port 8000
+```
+
+Open `http://127.0.0.1:8000` to inspect the corpus, retrieval results, generated answers,
+quality metrics, safety checks, cost estimates, and report exports in a dark-mode UI.
 
 ## Current Architecture
 
@@ -39,7 +37,7 @@ Document ingestion -> semantic chunking -> vector store adapter
 
 ## Metrics
 
-The Phase 1 evaluator reports:
+The evaluator reports:
 
 - `faithfulness`
 - `answer_relevancy`
@@ -56,8 +54,8 @@ external model providers.
 
 ## Optional Retrieval Backends
 
-Phase 2 adds dependency-optional adapter boundaries for Pinecone and pgvector. Local tests validate
-payload construction and SQL shape without requiring cloud credentials:
+The retrieval layer includes dependency-optional adapter boundaries for Pinecone and pgvector.
+Local tests validate payload construction and SQL shape without requiring cloud credentials:
 
 ```bash
 pip install -e ".[pinecone]"
@@ -66,12 +64,12 @@ pip install -e ".[postgres]"
 
 ## RAGAS And Guardrails
 
-Phase 3 writes a RAGAS-compatible JSONL dataset during every eval run:
+The harness writes a RAGAS-compatible JSONL dataset during every eval run:
 
 ```bash
 rag-harness run-eval \
   --docs data/raw \
-  --output reports/phase3_eval.json \
+  --output reports/eval.json \
   --ragas-export reports/ragas_dataset.jsonl
 ```
 

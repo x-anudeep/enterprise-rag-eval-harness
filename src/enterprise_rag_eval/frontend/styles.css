@@ -1,0 +1,294 @@
+:root {
+  color-scheme: dark;
+  --bg: #07090f;
+  --panel: #10141f;
+  --panel-2: #151b28;
+  --text: #eef3ff;
+  --muted: #8d9bb3;
+  --line: #293244;
+  --accent: #2dd4bf;
+  --accent-2: #60a5fa;
+  --danger: #fb7185;
+  --ok: #86efac;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 28px 22px;
+  border-right: 1px solid var(--line);
+  background: #0b0f18;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid rgba(45, 212, 191, 0.45);
+  background: rgba(45, 212, 191, 0.1);
+  color: var(--accent);
+  font-weight: 800;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.brand h1 {
+  font-size: 1rem;
+}
+
+.brand p,
+.eyebrow {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.nav {
+  display: grid;
+  gap: 8px;
+}
+
+.nav a {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+}
+
+.nav a:hover {
+  color: var(--text);
+  border-color: var(--line);
+  background: var(--panel);
+}
+
+.workspace {
+  padding: 28px;
+  display: grid;
+  gap: 20px;
+}
+
+.topbar,
+.panel,
+.metric-card {
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 22px;
+}
+
+.topbar h2 {
+  margin-top: 6px;
+  font-size: clamp(1.35rem, 2.5vw, 2.2rem);
+  letter-spacing: 0;
+}
+
+.status-badge {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.status-badge.pass {
+  color: var(--ok);
+  border-color: rgba(134, 239, 172, 0.45);
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.metric-card {
+  padding: 16px;
+  min-height: 104px;
+}
+
+.metric-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-bottom: 12px;
+}
+
+.metric-card strong {
+  font-size: 1.7rem;
+}
+
+.panel {
+  padding: 20px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.panel-heading h3 {
+  margin-top: 4px;
+  font-size: 1.05rem;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  border: 1px solid rgba(45, 212, 191, 0.6);
+  background: rgba(45, 212, 191, 0.12);
+  color: var(--accent);
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: rgba(45, 212, 191, 0.2);
+}
+
+.search-row input {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #080b12;
+  color: var(--text);
+  padding: 13px 14px;
+  outline: none;
+}
+
+.answer-box {
+  margin-top: 14px;
+  padding: 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--panel-2);
+  line-height: 1.5;
+}
+
+.context-list,
+.case-list,
+.document-table {
+  display: grid;
+  gap: 10px;
+}
+
+.context-list {
+  margin-top: 14px;
+}
+
+.context-card,
+.case-card,
+.document-row {
+  border: 1px solid var(--line);
+  background: #0c111b;
+  padding: 14px;
+}
+
+.context-card header,
+.case-card header,
+.document-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.context-card p,
+.case-card p {
+  margin-top: 10px;
+  color: #c8d2e3;
+  line-height: 1.5;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  padding: 4px 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.pill.pass {
+  color: var(--ok);
+}
+
+.pill.fail {
+  color: var(--danger);
+}
+
+@media (max-width: 940px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .workspace {
+    padding: 16px;
+  }
+
+  .topbar,
+  .panel-heading,
+  .context-card header,
+  .case-card header,
+  .document-row {
+    display: grid;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
