@@ -6,7 +6,7 @@ from pathlib import Path
 from time import perf_counter
 
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -35,6 +35,20 @@ class EvaluationResponse(BaseModel):
     cases: list[dict[str, object]]
 
 
+class CorpusSummary(BaseModel):
+    documents: int
+    chunks: int
+    domains: dict[str, int]
+    total_characters: int
+
+
+class ReportManifest(BaseModel):
+    json_report: str
+    ragas_export: str
+    markdown_summary: str
+    summary_available: bool
+
+
 def create_app(config: HarnessConfig | None = None) -> FastAPI:
     settings = config or HarnessConfig()
     app = FastAPI(title="Enterprise RAG Evaluation Harness")
@@ -52,9 +66,8 @@ def create_app(config: HarnessConfig | None = None) -> FastAPI:
         )
         return documents, chunks, retriever
 
-    @app.get("/api/overview", response_model=EvaluationResponse)
-    def overview() -> EvaluationResponse:
-        documents, chunks, questions, report = run_local_evaluation(settings, qa_limit=20)
+    def evaluate(qa_limit: int = 20) -> EvaluationResponse:
+        documents, chunks, questions, report = run_local_evaluation(settings, qa_limit=qa_limit)
         return EvaluationResponse(
             documents=len(documents),
             chunks=len(chunks),
@@ -63,6 +76,7 @@ def create_app(config: HarnessConfig | None = None) -> FastAPI:
             metrics=report.metrics,
             cases=[
                 {
+                    "question_id": result.question_id,
                     "question": result.question,
                     "answer": result.answer,
                     "expected_answer": result.expected_answer,
@@ -72,14 +86,49 @@ def create_app(config: HarnessConfig | None = None) -> FastAPI:
                         "violations": result.guardrail.violations,
                     },
                     "latency_ms": result.latency_ms,
+                    "faithfulness": result.faithfulness,
+                    "answer_relevancy": result.answer_relevancy,
+                    "context_precision": result.context_precision,
+                    "recall_at_3": result.recall_at_3,
                 }
                 for result in report.case_results
             ],
         )
 
+    @app.get("/api/health")
+    def health() -> dict[str, str]:
+        return {"status": "ok", "service": "enterprise-rag-eval-harness"}
+
+    @app.get("/api/overview", response_model=EvaluationResponse)
+    def overview() -> EvaluationResponse:
+        return evaluate()
+
+    @app.post("/api/evaluations", response_model=EvaluationResponse)
+    def run_evaluation(qa_limit: int = Query(default=20, ge=1, le=100)) -> EvaluationResponse:
+        return evaluate(qa_limit=qa_limit)
+
+    @app.get("/api/corpus", response_model=CorpusSummary)
+    def corpus_summary() -> CorpusSummary:
+        documents, chunks, _ = corpus()
+        domains: dict[str, int] = {}
+        for document in documents:
+            domains[document.domain] = domains.get(document.domain, 0) + 1
+        return CorpusSummary(
+            documents=len(documents),
+            chunks=len(chunks),
+            domains=domains,
+            total_characters=sum(len(document.text) for document in documents),
+        )
+
     @app.get("/api/documents")
-    def documents() -> list[dict[str, object]]:
+    def documents(domain: str | None = None) -> list[dict[str, object]]:
         source_documents, chunks, _ = corpus()
+        if domain:
+            source_documents = [
+                document
+                for document in source_documents
+                if document.domain.lower() == domain.lower()
+            ]
         chunk_counts = {
             document.id: len([chunk for chunk in chunks if chunk.document_id == document.id])
             for document in source_documents
@@ -95,6 +144,29 @@ def create_app(config: HarnessConfig | None = None) -> FastAPI:
             }
             for document in source_documents
         ]
+
+    @app.get("/api/documents/{document_id}")
+    def document_detail(document_id: str) -> dict[str, object]:
+        source_documents, chunks, _ = corpus()
+        document = next((item for item in source_documents if item.id == document_id), None)
+        if document is None:
+            raise HTTPException(status_code=404, detail="Document not found")
+        return {
+            "id": document.id,
+            "title": document.title,
+            "domain": document.domain,
+            "path": document.path,
+            "text": document.text,
+            "chunks": [
+                {
+                    "id": chunk.id,
+                    "token_count": chunk.token_count,
+                    "text": chunk.text,
+                }
+                for chunk in chunks
+                if chunk.document_id == document.id
+            ],
+        }
 
     @app.get("/api/search", response_model=SearchResponse)
     def search(q: str = Query(min_length=3, max_length=240)) -> SearchResponse:
@@ -124,6 +196,21 @@ def create_app(config: HarnessConfig | None = None) -> FastAPI:
                 for result in contexts
             ],
         )
+
+    @app.get("/api/reports", response_model=ReportManifest)
+    def reports() -> ReportManifest:
+        return ReportManifest(
+            json_report=str(Path("reports/eval.json")),
+            ragas_export=str(settings.ragas.export_path),
+            markdown_summary=str(settings.reporting.markdown_path),
+            summary_available=settings.reporting.markdown_path.exists(),
+        )
+
+    @app.get("/api/reports/summary", response_class=PlainTextResponse)
+    def report_summary() -> str:
+        if not settings.reporting.markdown_path.exists():
+            run_local_evaluation(settings, qa_limit=20)
+        return settings.reporting.markdown_path.read_text(encoding="utf-8")
 
     app.mount("/assets", StaticFiles(directory=Path(str(static_dir))), name="assets")
 
