@@ -127,6 +127,13 @@ p {
   white-space: nowrap;
 }
 
+.topbar-actions,
+.case-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .status-badge.pass {
   color: var(--ok);
   border-color: rgba(134, 239, 172, 0.45);
@@ -172,7 +179,8 @@ p {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -184,17 +192,28 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
 button:hover {
   background: rgba(45, 212, 191, 0.2);
 }
 
-.search-row input {
+select,
+.search-row input,
+.case-tools input {
   width: 100%;
   border: 1px solid var(--line);
   background: #080b12;
   color: var(--text);
   padding: 13px 14px;
   outline: none;
+}
+
+select {
+  width: auto;
 }
 
 .answer-box {
@@ -207,7 +226,8 @@ button:hover {
 
 .context-list,
 .case-list,
-.document-table {
+.document-table,
+.workflow-list {
   display: grid;
   gap: 10px;
 }
@@ -218,7 +238,9 @@ button:hover {
 
 .context-card,
 .case-card,
-.document-row {
+.document-row,
+.workflow-step,
+.detail-card {
   border: 1px solid var(--line);
   background: #0c111b;
   padding: 14px;
@@ -226,17 +248,61 @@ button:hover {
 
 .context-card header,
 .case-card header,
-.document-row {
+.document-row,
+.workflow-step {
   display: flex;
   justify-content: space-between;
   gap: 14px;
 }
 
+.document-row {
+  width: 100%;
+  color: inherit;
+  text-align: left;
+}
+
+.document-detail {
+  margin-top: 14px;
+}
+
+.workflow-step {
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.workflow-step > span {
+  color: var(--accent);
+  font-weight: 800;
+  min-width: 34px;
+}
+
 .context-card p,
-.case-card p {
+.case-card p,
+.workflow-step p,
+.detail-card p {
   margin-top: 10px;
   color: #c8d2e3;
   line-height: 1.5;
+}
+
+.context-card footer,
+.case-card footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.report-preview {
+  margin: 0;
+  max-height: 420px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  background: #080b12;
+  color: #c8d2e3;
+  padding: 16px;
+  white-space: pre-wrap;
+  line-height: 1.45;
 }
 
 .pill {
@@ -282,9 +348,11 @@ button:hover {
 
   .topbar,
   .panel-heading,
+  .topbar-actions,
   .context-card header,
   .case-card header,
-  .document-row {
+  .document-row,
+  .workflow-step {
     display: grid;
   }
 

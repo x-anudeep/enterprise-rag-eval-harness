@@ -19,8 +19,10 @@
         <nav class="nav">
           <a href="#overview">Overview</a>
           <a href="#query">Query</a>
+          <a href="#workflow">Workflow</a>
           <a href="#cases">Evaluation</a>
           <a href="#corpus">Corpus</a>
+          <a href="#reports">Reports</a>
         </nav>
       </aside>
 
@@ -30,7 +32,10 @@
             <p class="eyebrow">Enterprise RAG</p>
             <h2>Accuracy, safety, latency, and cost in one loop</h2>
           </div>
-          <div id="statusBadge" class="status-badge">Loading</div>
+          <div class="topbar-actions">
+            <button id="refreshEval" type="button">Refresh Eval</button>
+            <div id="statusBadge" class="status-badge">Loading</div>
+          </div>
         </header>
 
         <section id="overview" class="metric-grid"></section>
@@ -55,11 +60,24 @@
           <div id="contextList" class="context-list"></div>
         </section>
 
+        <section id="workflow" class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Pipeline</p>
+              <h3>How a question becomes a graded answer</h3>
+            </div>
+          </div>
+          <div id="workflowList" class="workflow-list"></div>
+        </section>
+
         <section id="cases" class="panel">
           <div class="panel-heading">
             <div>
               <p class="eyebrow">Evaluation Cases</p>
               <h3>Generated questions and graded answers</h3>
+            </div>
+            <div class="case-tools">
+              <input id="caseFilter" type="search" placeholder="Filter questions" aria-label="Filter cases" />
             </div>
           </div>
           <div id="caseList" class="case-list"></div>
@@ -71,8 +89,22 @@
               <p class="eyebrow">Indexed Corpus</p>
               <h3>Source documents</h3>
             </div>
+            <select id="domainFilter" aria-label="Filter documents by domain">
+              <option value="">All domains</option>
+            </select>
           </div>
           <div id="documentTable" class="document-table"></div>
+          <div id="documentDetail" class="document-detail"></div>
+        </section>
+
+        <section id="reports" class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Artifacts</p>
+              <h3>Evaluation report preview</h3>
+            </div>
+          </div>
+          <pre id="reportPreview" class="report-preview">Loading report...</pre>
         </section>
       </section>
     </main>
