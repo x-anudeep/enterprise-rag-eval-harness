@@ -12,6 +12,11 @@ const workflowListEl = document.querySelector("#workflowList");
 const domainFilterEl = document.querySelector("#domainFilter");
 const caseFilterEl = document.querySelector("#caseFilter");
 const reportPreviewEl = document.querySelector("#reportPreview");
+const uploadFormEl = document.querySelector("#uploadForm");
+const uploadFileEl = document.querySelector("#uploadFile");
+const uploadFileLabelEl = document.querySelector("#uploadFileLabel");
+const uploadStatusEl = document.querySelector("#uploadStatus");
+const uploadButtonEl = document.querySelector("#uploadButton");
 
 let evaluationData = null;
 let documentData = [];
@@ -208,6 +213,17 @@ async function loadOverview() {
   reportPreviewEl.textContent = await reportResponse.text();
 }
 
+async function reloadCorpus() {
+  const [overviewResponse, documentsResponse] = await Promise.all([
+    fetch("/api/overview"),
+    fetch("/api/documents"),
+  ]);
+  renderOverview(await overviewResponse.json());
+  documentData = await documentsResponse.json();
+  renderDomainFilter(documentData);
+  renderDocuments();
+}
+
 async function refreshEvaluation() {
   refreshEvalEl.disabled = true;
   refreshEvalEl.textContent = "Refreshing";
@@ -227,10 +243,42 @@ async function runSearch() {
   runSearchEl.textContent = "Run Query";
 }
 
+async function uploadDocument(event) {
+  event.preventDefault();
+  const formData = new FormData(uploadFormEl);
+  if (!uploadFileEl.files.length) {
+    uploadStatusEl.textContent = "Choose a text or Markdown file first.";
+    return;
+  }
+  uploadButtonEl.disabled = true;
+  uploadButtonEl.textContent = "Uploading";
+  uploadStatusEl.textContent = "";
+
+  const response = await fetch("/api/documents/upload", {
+    method: "POST",
+    body: formData,
+  });
+  const payload = await response.json();
+  if (!response.ok) {
+    uploadStatusEl.textContent = payload.detail ?? "Upload failed.";
+  } else {
+    uploadStatusEl.textContent = `Added ${payload.title}. The corpus was re-indexed.`;
+    uploadFormEl.reset();
+    uploadFileLabelEl.textContent = "Choose a .txt or .md file";
+    await reloadCorpus();
+  }
+  uploadButtonEl.disabled = false;
+  uploadButtonEl.textContent = "Upload Document";
+}
+
 runSearchEl.addEventListener("click", runSearch);
 refreshEvalEl.addEventListener("click", refreshEvaluation);
 domainFilterEl.addEventListener("change", renderDocuments);
 caseFilterEl.addEventListener("input", renderCases);
+uploadFormEl.addEventListener("submit", uploadDocument);
+uploadFileEl.addEventListener("change", () => {
+  uploadFileLabelEl.textContent = uploadFileEl.files[0]?.name ?? "Choose a .txt or .md file";
+});
 queryInputEl.addEventListener("keydown", (event) => {
   if (event.key === "Enter") runSearch();
 });

@@ -10,7 +10,6 @@
     <main class="app-shell">
       <aside class="sidebar">
         <div class="brand">
-          <div class="brand-mark">R</div>
           <div>
             <h1>RAG Eval Harness</h1>
             <p>Healthcare compliance QA</p>
@@ -28,9 +27,9 @@
 
       <section class="workspace">
         <header class="topbar">
-          <div>
+          <div class="intro-copy">
             <p class="eyebrow">Enterprise RAG</p>
-            <h2>Accuracy, safety, latency, and cost in one loop</h2>
+            <h2>Test document answers before they ship</h2>
           </div>
           <div class="topbar-actions">
             <button id="refreshEval" type="button">Refresh Eval</button>
@@ -58,6 +57,27 @@
           </div>
           <div id="answerBox" class="answer-box"></div>
           <div id="contextList" class="context-list"></div>
+        </section>
+
+        <section id="upload" class="panel upload-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Upload</p>
+              <h3>Add your own documents</h3>
+            </div>
+          </div>
+          <form id="uploadForm" class="upload-form">
+            <label>
+              <span>Domain</span>
+              <input id="uploadDomain" name="domain" value="uploaded" aria-label="Upload domain" />
+            </label>
+            <label class="file-drop">
+              <span id="uploadFileLabel">Choose a .txt or .md file</span>
+              <input id="uploadFile" name="file" type="file" accept=".txt,.md,text/plain,text/markdown" />
+            </label>
+            <button id="uploadButton" type="submit">Upload Document</button>
+          </form>
+          <p id="uploadStatus" class="upload-status"></p>
         </section>
 
         <section id="workflow" class="panel">
