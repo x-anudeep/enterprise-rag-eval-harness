@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import re
 from functools import lru_cache
 from importlib.resources import files
 from pathlib import Path
 from time import perf_counter
+from typing import Annotated
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -49,6 +51,14 @@ class ReportManifest(BaseModel):
     summary_available: bool
 
 
+class UploadResponse(BaseModel):
+    id: str
+    title: str
+    domain: str
+    path: str
+    characters: int
+
+
 def create_app(config: HarnessConfig | None = None) -> FastAPI:
     settings = config or HarnessConfig()
     app = FastAPI(title="Enterprise RAG Evaluation Harness")
@@ -65,6 +75,9 @@ def create_app(config: HarnessConfig | None = None) -> FastAPI:
             reranker=CrossEncoderReranker(settings.reranker) if settings.reranker.enabled else None,
         )
         return documents, chunks, retriever
+
+    def clear_runtime_cache() -> None:
+        corpus.cache_clear()
 
     def evaluate(qa_limit: int = 20) -> EvaluationResponse:
         documents, chunks, questions, report = run_local_evaluation(settings, qa_limit=qa_limit)
@@ -168,6 +181,46 @@ def create_app(config: HarnessConfig | None = None) -> FastAPI:
             ],
         }
 
+    @app.post("/api/documents/upload", response_model=UploadResponse)
+    async def upload_document(
+        file: Annotated[UploadFile, File()],
+        domain: Annotated[str, Form()] = "uploaded",
+    ) -> UploadResponse:
+        filename = _safe_filename(file.filename or "uploaded.txt")
+        suffix = Path(filename).suffix.lower()
+        if suffix not in {".txt", ".md"}:
+            raise HTTPException(
+                status_code=400,
+                detail="Upload text or Markdown files only.",
+            )
+
+        raw = await file.read()
+        try:
+            text = raw.decode("utf-8").strip()
+        except UnicodeDecodeError as exc:
+            raise HTTPException(
+                status_code=400,
+                detail="Uploaded document must be UTF-8 text.",
+            ) from exc
+        if not text:
+            raise HTTPException(status_code=400, detail="Uploaded document is empty.")
+
+        safe_domain = _safe_filename(domain).replace(".", "_") or "uploaded"
+        target_dir = settings.docs_path / safe_domain
+        target_dir.mkdir(parents=True, exist_ok=True)
+        target_path = _unique_path(target_dir / filename)
+        target_path.write_text(text + "\n", encoding="utf-8")
+        clear_runtime_cache()
+
+        document_id = target_path.relative_to(settings.docs_path).with_suffix("").as_posix()
+        return UploadResponse(
+            id=document_id.replace("/", "__"),
+            title=target_path.stem.replace("_", " ").title(),
+            domain=safe_domain.replace("_", " "),
+            path=str(target_path),
+            characters=len(text),
+        )
+
     @app.get("/api/search", response_model=SearchResponse)
     def search(q: str = Query(min_length=3, max_length=240)) -> SearchResponse:
         _, _, retriever = corpus()
@@ -219,3 +272,20 @@ def create_app(config: HarnessConfig | None = None) -> FastAPI:
         return FileResponse(Path(str(static_dir.joinpath("index.html"))))
 
     return app
+
+
+def _safe_filename(value: str) -> str:
+    cleaned = re.sub(r"[^A-Za-z0-9_.-]+", "_", value.strip())
+    return cleaned.strip("._") or "uploaded.txt"
+
+
+def _unique_path(path: Path) -> Path:
+    if not path.exists():
+        return path
+    stem = path.stem
+    suffix = path.suffix
+    for index in range(2, 1000):
+        candidate = path.with_name(f"{stem}_{index}{suffix}")
+        if not candidate.exists():
+            return candidate
+    raise RuntimeError("Unable to create a unique upload path.")
