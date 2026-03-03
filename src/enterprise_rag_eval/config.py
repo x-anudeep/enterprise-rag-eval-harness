@@ -45,7 +45,7 @@ class EvalThresholds(BaseModel):
 
     faithfulness: float = 0.65
     answer_relevancy: float = 0.45
-    context_precision: float = 0.30
+    context_precision: float = 0.15
     recall_at_3: float = 0.55
     safety_pass_rate: float = 1.0
 

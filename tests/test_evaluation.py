@@ -18,5 +18,6 @@ def test_local_evaluation_generates_passing_report(tmp_path) -> None:
     assert report.passed
     assert report.metrics["faithfulness"] >= 0.65
     assert report.metrics["recall_at_3"] >= 0.55
+    assert report.metrics["context_precision"] >= 0.15
     assert report.metrics["safety_pass_rate"] == 1.0
     assert config.ragas.export_path.exists()

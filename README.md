@@ -31,6 +31,9 @@ The default app does not require paid API keys. Retrieval, answer extraction, gu
 evaluation metrics all run locally. The dashboard can upload UTF-8 `.txt` and `.md` documents,
 re-index the corpus, and search the newly uploaded content immediately.
 
+The repo includes a deterministic synthetic benchmark corpus with more than 1,000 local documents
+for scale testing. See `docs/benchmark_corpus.md` for details.
+
 The dashboard includes:
 
 - Live question answering against the compliance corpus

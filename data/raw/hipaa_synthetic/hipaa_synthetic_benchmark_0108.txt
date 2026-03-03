@@ -1,0 +1,7 @@
+HIPAA operating procedure 0108: Role Based Access
+
+This synthetic benchmark document describes role based access requirements for the hipaa compliance program. Teams must maintain annual policy attestation evidence and update the control owner when exceptions affect patient safety, privacy, quality, or trial data integrity.
+
+The procedure connects role based access with audit controls so retrieval tests can verify both keyword matching and semantic matching. Records should be reviewed on a monthly cadence, retained for at least 78 months, and made available for audit, inspection, or sponsor oversight when requested.
+
+Responsible teams should document the rationale, source system, reviewer, due date, and closure evidence for every role based access activity. Escalation is required when the activity is overdue, incomplete, unsupported by evidence, or inconsistent with the approved compliance procedure.
