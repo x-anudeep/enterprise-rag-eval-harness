@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
+from enterprise_rag_eval.config import HarnessConfig
 from enterprise_rag_eval.server import create_app
 
 
@@ -75,3 +78,30 @@ def test_document_detail_and_reports_are_available() -> None:
     assert manifest.status_code == 200
     assert summary.status_code == 200
     assert "Enterprise RAG Evaluation Summary" in summary.text
+
+
+def test_upload_document_reindexes_searchable_corpus(tmp_path) -> None:
+    docs_path = tmp_path / "docs"
+    docs_path.mkdir()
+    config = HarnessConfig(docs_path=docs_path)
+    config.ragas.export_path = tmp_path / "ragas.jsonl"
+    config.reporting.markdown_path = tmp_path / "summary.md"
+    client = TestClient(create_app(config))
+
+    response = client.post(
+        "/api/documents/upload",
+        data={"domain": "internal policy"},
+        files={
+            "file": (
+                "retention_policy.txt",
+                b"Retention policy requires audit evidence to be kept for six years.",
+                "text/plain",
+            )
+        },
+    )
+    search = client.get("/api/search", params={"q": "How long is audit evidence retained?"})
+
+    assert response.status_code == 200
+    assert Path(response.json()["path"]).exists()
+    assert search.status_code == 200
+    assert "six years" in search.json()["answer"].lower()

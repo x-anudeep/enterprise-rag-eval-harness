@@ -27,9 +27,14 @@ rag-harness serve --host 127.0.0.1 --port 8000
 Open `http://127.0.0.1:8000` to inspect the corpus, retrieval results, generated answers,
 quality metrics, safety checks, cost estimates, and report exports in a dark-mode UI.
 
+The default app does not require paid API keys. Retrieval, answer extraction, guardrails, and
+evaluation metrics all run locally. The dashboard can upload UTF-8 `.txt` and `.md` documents,
+re-index the corpus, and search the newly uploaded content immediately.
+
 The dashboard includes:
 
 - Live question answering against the compliance corpus
+- Local document upload for text and Markdown files
 - Retrieved contexts with BM25 and semantic scores
 - Evaluation refresh for generated QA cases
 - Pipeline view from ingestion through CI gating
