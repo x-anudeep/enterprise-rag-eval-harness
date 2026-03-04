@@ -289,3 +289,6 @@ def _unique_path(path: Path) -> Path:
         if not candidate.exists():
             return candidate
     raise RuntimeError("Unable to create a unique upload path.")
+
+
+app = create_app()

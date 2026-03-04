@@ -44,6 +44,19 @@ The dashboard includes:
 - Corpus browser with document detail
 - Markdown report preview
 
+## Hosting
+
+The app can be deployed as a standard FastAPI web service. The repo includes `render.yaml`,
+`Procfile`, and `Dockerfile` so you can host it and share a public dashboard link.
+
+Recommended path:
+
+```text
+GitHub repo -> Render Web Service -> public Render URL
+```
+
+See `docs/deployment.md` for setup steps.
+
 ## Current Architecture
 
 ```text
